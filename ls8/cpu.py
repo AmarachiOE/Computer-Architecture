@@ -66,6 +66,17 @@ class CPU:
 
         print()
 
+    
+    def ram_read(self, address):
+        """ram_read() should accept the address to read and return the value stored there."""
+
+        return self.ram[address]
+
+    def ram_write(self, value, address):
+        """ raw_write() should accept a value to write, and the address to write it to."""
+
+        self.ram[address] = value
+
     def run(self):
-        """Run the CPU."""
-        pass
+            """Run the CPU."""
+            pass
