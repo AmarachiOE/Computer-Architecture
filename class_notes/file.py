@@ -26,7 +26,8 @@ try:
                 continue
 
             x = int(num, 2) # base 2
-            # print(x)
+            # xbin = int(f"{x:08b}")
+            # print(type(xbin), xbin)
             print(f"{x:08b}: {x}")
 
 
