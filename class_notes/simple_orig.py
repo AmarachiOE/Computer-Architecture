@@ -1,4 +1,5 @@
-import sys
+# this file is an emulator... it's emulating our program
+
 
 PRINT_BEEJ      = 1 # instruction 1
 HALT            = 2 # instruction 2
@@ -56,6 +57,8 @@ register =  [0] * 8
 # we need pointer, pc - program counter
 pc = 0 # points to memory
 running = True
+
+
 
 while running:
     command = memory[pc] # starting at beginning

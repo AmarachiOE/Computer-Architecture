@@ -8,7 +8,8 @@ class CPU:
 
     def __init__(self):
         """Construct a new CPU."""
-        self.PC = 0  # DO NOT ADD COMMAS
+        # DO NOT ADD COMMAS
+        self.PC = 0  
         self.IR = None
         self.FL = 0
         self.MAR = None
