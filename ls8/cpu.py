@@ -81,7 +81,10 @@ class CPU:
 
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
-        # elif op == "SUB": etc
+
+        elif op == "MUL":
+            self.reg[reg_a] *= self.reg[reg_b]
+
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -122,8 +125,6 @@ class CPU:
     def run(self):
         """Run the CPU."""
 
-        operand_a = self.ram_read(self.PC + 1)
-        operand_b = self.ram_read(self.PC + 2)
 
         # From LS8 Cheatsheet:
         # ALU ops
@@ -170,6 +171,8 @@ class CPU:
 
         while running:
             pc = self.PC
+            operand_a = self.ram_read(self.PC + 1)
+            operand_b = self.ram_read(self.PC + 2)
 
             # read the memory address stored in register PC, and store in IR
             self.IR = self.ram[pc]
@@ -180,12 +183,18 @@ class CPU:
             if command == LDI:
                 print("LDI")
                 self.reg[operand_a] = operand_b
+                # print("Reg:", operand_a, "Value: ", self.reg[operand_a])
                 self.PC += 3
 
             elif command == PRN:
                 print("PRN")
                 print(self.reg[operand_a])
                 self.PC += 2
+
+            elif command == MUL:
+                print("MUL")
+                self.alu("MUL", operand_a, operand_b)
+                self.PC += 3
 
             elif command == HLT:
                 print("HLT")
