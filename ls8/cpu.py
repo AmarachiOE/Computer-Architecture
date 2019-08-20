@@ -146,29 +146,30 @@ class CPU:
             self.IR = self.ram[pc]
 
             # starting at beginning
-            command = self.ram[pc]
+            # command = self.ram[pc]
+            # command is self.IR
 
-            if command == LDI:
+            if self.IR == LDI:
                 print("LDI")
                 self.reg[operand_a] = operand_b
                 # print("Reg:", operand_a, "Value: ", self.reg[operand_a])
                 self.PC += 3
 
-            elif command == PRN:
+            elif self.IR == PRN:
                 print("PRN")
                 print(self.reg[operand_a])
                 self.PC += 2
 
-            elif command == MUL:
+            elif self.IR == MUL:
                 print("MUL")
                 self.alu("MUL", operand_a, operand_b)
                 self.PC += 3
 
-            elif command == HLT:
+            elif self.IR == HLT:
                 print("HLT")
                 running = False
                 self.PC += 1
 
             else:
-                print(f"Unknown instruction: {command}")
+                print(f"Unknown instruction: {self.IR}")
                 sys.exit(1)
