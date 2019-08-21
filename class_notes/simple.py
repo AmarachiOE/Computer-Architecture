@@ -1,20 +1,24 @@
 import sys
 
-PRINT_BEEJ = 1
-HALT = 2
-PRINT_NUM = 3
-SAVE = 4
-PRINT_REGISTER = 5
-ADD = 6
+PRINT_BEEJ      = 1
+HALT            = 2
+PRINT_NUM       = 3
+SAVE            = 4
+PRINT_REGISTER  = 5
+ADD             = 6
+PUSH            = 7 # for stack
+POP             = 8 # for stack
 
 '''
 SAVE takes 2 arguments
 saves value in [ARG1] to register [ARG2]
 '''
 
-register = [0] * 8
+register = [0] * 8 # self.reg
 
-memory = [0] * 128  # 128 bytes of RAM
+memory = [0] * 128  # 128 bytes of RAM # self.ram
+
+SP =  7 # self.reg[7] # stack pointer
 
 
 def load_memory(filename):
@@ -36,7 +40,7 @@ def load_memory(filename):
                 if num == "":
                     continue
 
-                value = int(num)
+                value = int(num) # for binary use int(num, 2)
 
                 memory[address] = value
 
@@ -88,6 +92,31 @@ while running:
         register[reg_a] += register[reg_b]
         pc += 3
 
+    elif command == PUSH:
+        # do push
+        """ Push the value in the given register on the stack.
+        Decrement the SP.
+        Copy the value in the given register to the address pointed to by SP."""
+
+        reg = memory[pc + 1] # get the register
+        value = register[reg] # get the value at that register
+        register[SP] -= 1 # decrement SP
+        memory[register[SP]] = value # set mem at SP register to value
+
+        pc += 2
+
+
+    elif command == POP:
+        # do pop
+        """ Pop the value at the top of the stack into the given register.
+        Copy the value from the address pointed to by SP to the given register.
+        Increment SP."""
+        reg = memory[pc + 1]
+        value = memory[register[SP]]
+        register[reg] = value
+        register[SP] += 1
+        pc += 2
+    
     elif command == HALT:
         running = False
         pc += 1
@@ -95,3 +124,5 @@ while running:
     else:
         print(f"Unknown instruction: {command}")
         sys.exit(1)
+
+

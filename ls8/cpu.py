@@ -29,9 +29,10 @@ class CPU:
         self.MAR = None
         self.MDR = None
         self.reg = [0] * 8
-        self.reg[7] = 0xF4
+        # self.reg[7] = 0xF4
         self.ram = [0] * 256
         self.ram[0] = 0x00
+        self.SP = 7
 
         # self.reg[5] = IM
         # self.reg[6] = IS
@@ -169,6 +170,58 @@ class CPU:
                 print("HLT")
                 running = False
                 self.PC += 1
+
+            elif self.IR == PUSH:
+                """ Push the value in the given register on the stack.
+                    Decrement the SP.
+                    Copy the value in the given register to the address pointed to by SP."""
+
+                print("PUSH")
+
+                # decrement the SP 
+                # decrement what the SP points to 
+                # reg[7] now points to...
+                self.reg[self.SP] -= 1
+
+                # get the register number
+                reg_num = self.ram[operand_a]
+                print("Reg : ", reg_num)
+
+                # get the value at that register
+                # value = self.reg[reg_num]
+                value = self.reg[operand_a]
+                print("Reg # and Value: ", operand_a, value)
+            
+                # set memory at register SP to value
+                self.ram[self.reg[self.SP]] = value
+
+                self.PC += 2
+
+            elif self.IR == POP:
+                """ Pop the value at the top of the stack into the given register.
+                    Copy the value from the address pointed to by SP to the given register.
+                    Increment SP."""
+                
+                print("POP")
+
+                # get the register number
+                reg_num = self.ram[operand_a]
+
+                # get the value of address in mem pointed to by SP
+                value = self.ram[self.reg[self.SP]]
+
+                # set this value to register
+                # self.reg[reg_num] = value
+                self.reg[operand_a] = value
+
+                # increment SP
+                self.reg[self.SP] += 1
+
+                self.PC += 2
+
+
+
+
 
             else:
                 print(f"Unknown instruction: {self.IR}")
