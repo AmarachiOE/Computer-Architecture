@@ -5,9 +5,7 @@ import sys
 # From LS8 Cheatsheet (No All):
 # ALU ops
 ADD = 0b10100000
-SUB = 0b10100001
 MUL = 0b10100010
-DIV = 0b10100011
 
 # Other
 HLT = 0b00000001
@@ -15,6 +13,8 @@ LDI = 0b10000010
 PUSH = 0b01000101
 POP = 0b01000110
 PRN = 0b01000111
+CALL = 0b01010000
+RET = 0b00010001
 
 
 class CPU:
@@ -161,6 +161,11 @@ class CPU:
                 print(self.reg[operand_a])
                 self.PC += 2
 
+            elif self.IR == ADD:
+                print("ADD")
+                self.alu("ADD", operand_a, operand_b)
+                self.PC += 3
+
             elif self.IR == MUL:
                 print("MUL")
                 self.alu("MUL", operand_a, operand_b)
@@ -172,31 +177,23 @@ class CPU:
                 self.PC += 1
 
             elif self.IR == PUSH:
-                """ Push the value in the given register on the stack.
-                    Decrement the SP.
-                    Copy the value in the given register to the address pointed to by SP."""
-
                 print("PUSH")
 
-                # decrement the SP 
-                # decrement what the SP points to 
+                # decrement the SP
+                # decrement what the SP points to
                 # reg[7] now points to...
                 self.reg[self.SP] -= 1
 
-                # get the value at that register
+                # get the value at requested register
                 value = self.reg[operand_a]
                 # print("Reg # and Value: ", operand_a, value)
-            
+
                 # set memory at register SP to value
                 self.ram[self.reg[self.SP]] = value
 
                 self.PC += 2
 
             elif self.IR == POP:
-                """ Pop the value at the top of the stack into the given register.
-                    Copy the value from the address pointed to by SP to the given register.
-                    Increment SP."""
-                
                 print("POP")
 
                 # get the value of address in mem pointed to by SP
@@ -210,6 +207,31 @@ class CPU:
 
                 self.PC += 2
 
+            elif self.IR == CALL:
+                print("CALL")
+
+                # decrement stack pointer
+                self.reg[self.SP] -= 1
+
+                # set memory at register SP to instruction to return to
+                # the next instruction after call
+
+                self.ram[self.reg[self.SP]] = self.PC + 2
+
+                # set the PC to where the subroutine is in the register (the value at that register)
+
+                self.PC = self.reg[operand_a]  # = index/address 24
+                # print("PC at", self.PC)
+
+            elif self.IR == RET:
+                print("RET")
+
+                # set PC to return instruction from stack
+                return_here = self.ram[self.reg[self.SP]]
+                self.PC = return_here
+
+                # increment SP
+                self.reg[self.SP] += 1
 
             else:
                 print(f"Unknown instruction: {self.IR}")
