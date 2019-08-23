@@ -6,6 +6,7 @@ import sys
 # ALU ops
 ADD = 0b10100000
 MUL = 0b10100010
+CMP = 0b10100111
 
 # Other
 HLT = 0b00000001
@@ -15,6 +16,9 @@ POP = 0b01000110
 PRN = 0b01000111
 CALL = 0b01010000
 RET = 0b00010001
+JMP = 0B01010100
+JEQ = 0b01010101
+JNE = 0b01010110
 
 
 class CPU:
@@ -23,19 +27,23 @@ class CPU:
     def __init__(self):
         """Construct a new CPU."""
         # DO NOT ADD COMMAS
+        self.reg = [0] * 8
+        self.ram = [0] * 256
+        self.ram[0] = 0x00
+        
+        # Markers
         self.PC = 0
         self.IR = None
         self.FL = 0
         self.MAR = None
         self.MDR = None
-        self.reg = [0] * 8
-        # self.reg[7] = 0xF4
-        self.ram = [0] * 256
-        self.ram[0] = 0x00
-        self.SP = 7
+        self.SP = 7 # self.reg[7]
 
-        # self.reg[5] = IM
-        # self.reg[6] = IS
+        #  Flags
+        self.E = None
+        self.L = None
+        self.G = None
+
 
     def load(self, filename):
         """Load a program into memory."""
@@ -95,6 +103,26 @@ class CPU:
 
         elif op == "MUL":
             self.reg[reg_a] *= self.reg[reg_b]
+
+        elif op == "CMP":
+            """If they are equal, set the Equal E flag to 1, otherwise set it to 0.
+
+            If registerA is less than registerB, set the Less-than L flag to 1, otherwise set it to 0.
+            
+            If registerA is greater than registerB, set the Greater-than G flag to 1, otherwise set it to 0."""
+
+            self.E = 0
+            self.L = 0
+            self.G = 0
+
+            if self.reg[reg_a] == self.reg[reg_b]:
+                self.E = 1
+
+            if self.reg[reg_a] < self.reg[reg_b]:
+                self.L = 1
+
+            if self.reg[reg_a] > self.reg[reg_b]:
+                self.G = 1
 
         else:
             raise Exception("Unsupported ALU operation")
@@ -232,6 +260,35 @@ class CPU:
 
                 # increment SP
                 self.reg[self.SP] += 1
+
+            elif self.IR == CMP:
+                print("CMP")
+                self.alu("CMP", operand_a, operand_b)
+                self.PC += 3
+
+            elif self.IR == JMP:
+                print("JMP")
+                self.PC = self.reg[operand_a]
+
+            elif self.IR == JEQ:
+                print("JEQ")
+
+                if self.E == 1:
+                    print("equal flag true")
+                    self.PC = self.reg[operand_a]
+
+                elif self.E != 1:
+                    self.PC += 2
+
+            elif self.IR == JNE:
+                print("JNE")
+
+                if self.E != 1:
+                    print("equal flag true")
+                    self.PC = self.reg[operand_a]
+
+                elif self.E == 1:
+                    self.PC += 2
 
             else:
                 print(f"Unknown instruction: {self.IR}")
